@@ -57,7 +57,7 @@ Cartesian product of the individual outputs, called the _Medusa Tree_. Since
 the total number of possibilities is exponential in the number of heads and k,
 these draft sequences are usually pruned and only the most likely candidates
 validated in a single pass. The validated tokens from the candidate with the
-highest number of validated tokens are selected and the process continues.
+highest acceptance rate are selected and the process continues.
 
 _[Multi-Token Prediction](https://dl.acm.org/doi/10.5555/3692070.3692699)_
 (MTP) is a training-side technique designed to increase data efficiency by
