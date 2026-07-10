@@ -1,7 +1,7 @@
 ---
 title: "I/O-Aware Kernels"
 weight: 5
-description: "FlashAttention and FlashInfer"
+description: "FlashAttention, FlashInfer, and Blockwise Parallel Transformers"
 ---
 
 This section assumes an understanding of the GPU's memory hierarchy, a brief
