@@ -60,6 +60,33 @@ which implement FlashAttention while supporting multiple paged KV-management
 systems, such as PagedAttention or RadixAttention, as well as support for
 multi-head attention and grouped-query attention.
 
+## Blockwise Parallel Transformers
+
+[Blockwise Parallel
+Transformers](https://dl.acm.org/doi/10.5555/3666122.3666508) (BPT) extend the
+blockwise computation of FlashAttention to the feed-forward network of the
+transformer. FlashAttention already divides the input sequence into blocks, and
+for every Q block, it fetches all the K and V blocks and calculates the
+attention output. The attention outputs for all the Q blocks, however, are
+concatenated into sequence-sized activations for the feed-forward network and
+fed into it in their entirety. This places significant demands on GPU memory,
+as the requirements scale linearly with the input sequence length.
+
+BPT is a scheduling optimization based on the observation that having a barrier
+at the end of the attention phase is unnecessary and that the feed-forward
+phase can also be executed blockwise. This is because the attention phase is
+the only part of the transformer where cross-token information is needed; in
+contrast, the outputs of the feed-forward network for every token (and hence
+block) are independent of each other.
+
+BPT still requires attention for a specific Q block to be completed using
+FlashAttention; however, unlike before, it does not require the attention
+output for _all_ the blocks before proceeding to the feed-forward network. This
+allows the kernels to only materialize activations for the block, rather than
+for the entire sequence, which reduces the per-layer activation memory
+footprint by up to 4x, allowing larger sequences to be processed on the same
+GPU.
+
 ## Additional References
 
 1. [How FlashAttention Accelerates Generative AI Revolution (Video)](https://www.youtube.com/watch?v=gBMO1JZav44)
