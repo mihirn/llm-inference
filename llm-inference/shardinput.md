@@ -81,10 +81,12 @@ All-to-all communication reduces the amount of data being sent across the
 interconnect compared to ring attention: each device is only sent the Q, K, and
 V blocks for the heads it is responsible for, while in ring attention every
 device gets the K and V blocks for every head. The downside, however, is that
-model architectures with a small number of KV heads, as with GQA, limit the
-degree of available parallelization and substantially reduce the size of the K
-and V blocks. DeepSpeed-Ulysses also implicitly assumes that Q, K, and V for
-the entire sequence, for at least a single head, can fit on a single device.
+the degree of available parallelism is limited by the number of KV heads, so
+models with few of them, as with GQA, cannot be widely parallelized by
+DeepSpeed-Ulysses. Further, techniques that reduce the size of the K and V
+blocks, including GQA, reduce the communication advantage over ring attention.
+DeepSpeed-Ulysses also implicitly assumes that Q, K, and V for the entire
+sequence, for at least a single head, can fit on a single device.
 
 [Unified Sequence Parallelism](https://arxiv.org/abs/2405.07719) (USP) combines
 both DeepSpeed-Ulysses and ring attention into a single, flexible system. The
