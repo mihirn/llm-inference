@@ -14,6 +14,7 @@ jobs:
         env:
           NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
           CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+          IOP_CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.IOP_CLOUDFLARE_DEPLOY_HOOK }}
         run: |
           if [ -z "$NETLIFY_BUILD_HOOK" ]; then
             echo "NETLIFY_BUILD_HOOK is not set"
@@ -25,12 +26,22 @@ jobs:
             exit 1
           fi
 
+          if [ -z "$IOP_CLOUDFLARE_DEPLOY_HOOK" ]; then
+            echo "IOP_CLOUDFLARE_DEPLOY_HOOK is not set"
+            exit 1
+          fi
+
       - name: Trigger Netlify build hook
         env:
           NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
-        run: curl -X POST -d '{}' "$NETLIFY_BUILD_HOOK"
+        run: curl --fail --show-error --silent -X POST -d '{}' "$NETLIFY_BUILD_HOOK"
 
       - name: Trigger Cloudflare Pages deploy hook
         env:
           CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
-        run: curl -X POST "$CLOUDFLARE_DEPLOY_HOOK"
+        run: curl --fail --show-error --silent -X POST "$CLOUDFLARE_DEPLOY_HOOK"
+
+      - name: Trigger IOP Cloudflare Pages deploy hook
+        env:
+          IOP_CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.IOP_CLOUDFLARE_DEPLOY_HOOK }}
+        run: curl --fail --show-error --silent -X POST "$IOP_CLOUDFLARE_DEPLOY_HOOK"
