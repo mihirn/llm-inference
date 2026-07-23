@@ -105,3 +105,13 @@ or when requests have long shared prefixes. Shared blocks should outlive single
 requests and only be evicted when all the requests relying on them have
 finished; vLLM handles this by reference counting the blocks in the page table.
 
+[Pensieve](https://dl.acm.org/doi/abs/10.1145/3689031.3696086) generalizes
+PagedAttention to support non-contiguous memory regions during both the prefill
+and decode phases. The original kernel only supports single-token attention
+during the decode phase, while prefill occurs using a separate kernel which
+relies on the KV cache being contiguous in GPU memory. By supporting paged
+memory for both prefill and decode, Pensieve also relaxes the scheduling
+requirement that a single batch contain only prefill or decode requests,
+instead allowing requests in different stages to be merged in a single batch to
+improve utilization and reduce head-of-line blocking. Mixed prefill-decode
+batches are now broadly supported in most of the major inference runtimes.
